@@ -11,7 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: `${APP_URL}/sitemap.xml`,
-    host: APP_URL,
+    ...(APP_URL ? { sitemap: `${APP_URL}/sitemap.xml`, host: new URL(APP_URL).origin } : {}),
   };
 }

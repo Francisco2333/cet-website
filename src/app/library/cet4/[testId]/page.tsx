@@ -21,16 +21,5 @@ export default async function CET4Detail({ params }: { params: Promise<{ testId:
   const exam = getExam("cet4", testId);
   if (!exam) notFound();
 
-  const base = `/library/cet4/${testId}`;
-
-  return (
-    <ExamDetail
-      exam={exam}
-      level="cet4"
-      levelLabel="英语四级 CET-4"
-      testPdf={`${base}/test.pdf`}
-      answerPdf={`${base}/answer.pdf`}
-      audioMp3={exam.hasAudio ? `${base}/listening.mp3` : null}
-    />
-  );
+  return <ExamDetail exam={exam} />;
 }

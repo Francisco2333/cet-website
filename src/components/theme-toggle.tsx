@@ -1,32 +1,10 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggle() {
-  const [dark, setDark] = useState(true);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    const isDark = saved !== "light";
-    setDark(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  }, []);
-
   function toggle() {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
+    const dark = document.documentElement.classList.toggle("dark");
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch { /* 当前页面主题仍可切换。 */ }
   }
-
-  return (
-    <button
-      onClick={toggle}
-      className="p-2 rounded-lg text-muted hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-      aria-label={dark ? "切换到日间模式" : "切换到夜间模式"}
-    >
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
-  );
+  return <button className="tool-button" aria-label="切换明暗主题" onClick={toggle}><Sun className="hidden dark:block" size={16} /><Moon className="dark:hidden" size={16} /></button>;
 }

@@ -21,16 +21,5 @@ export default async function CET6Detail({ params }: { params: Promise<{ testId:
   const exam = getExam("cet6", testId);
   if (!exam) notFound();
 
-  const base = `/library/cet6/${testId}`;
-
-  return (
-    <ExamDetail
-      exam={exam}
-      level="cet6"
-      levelLabel="英语六级 CET-6"
-      testPdf={`${base}/test.pdf`}
-      answerPdf={`${base}/answer.pdf`}
-      audioMp3={exam.hasAudio ? `${base}/listening.mp3` : null}
-    />
-  );
+  return <ExamDetail exam={exam} />;
 }

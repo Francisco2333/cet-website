@@ -16,6 +16,8 @@
 # next.js
 /.next/
 /out/
+/public/pdfjs/
+/test-results/
 
 # production
 /build

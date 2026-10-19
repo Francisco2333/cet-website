@@ -1,5 +1,7 @@
 // 真题库静态数据 — 从 wehuster.com 同步
 // 数据文件由 scripts/sync-from-wehuster.ts 生成
+import resourceInventory from "./library-resources.json";
+import type { Resources } from "./exam";
 
 export interface ExamPaper {
   level: "cet4" | "cet6";
@@ -9,6 +11,7 @@ export interface ExamPaper {
   setLabel: string;  // "1", "2", "3", "2-3"
   label: string;     // "2025年6月 第1套"
   hasAudio: boolean;
+  resources: Resources;
 }
 
 const RAW: { level: "cet4" | "cet6"; id: string; hasAudio?: boolean }[] = [
@@ -119,13 +122,20 @@ function formatLabel(year: number, month: number, setLabel: string): string {
 
 export const ALL_EXAMS: ExamPaper[] = RAW.map((r) => {
   const { year, month, setLabel } = parseId(r.id);
+  const flags = (resourceInventory as Record<string, { paper: boolean; answer: boolean; audio: boolean }>)[`${r.level}/${r.id}`];
+  const base = `/library/${r.level}/${r.id}`;
   return {
     ...r,
     year,
     month,
     setLabel,
     label: formatLabel(year, month, setLabel),
-    hasAudio: r.hasAudio ?? false,
+    hasAudio: flags?.audio ?? false,
+    resources: {
+      ...(flags?.paper ? { paper: `${base}/test.pdf` } : {}),
+      ...(flags?.answer ? { answer: `${base}/answer.pdf` } : {}),
+      ...(flags?.audio ? { audio: `${base}/listening.mp3` } : {}),
+    },
   };
 }).sort((a, b) => {
   if (a.level !== b.level) return a.level.localeCompare(b.level);

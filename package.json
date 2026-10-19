@@ -3,16 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/prepare-pdf.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/inventory-resources.mjs --check && node scripts/prepare-pdf.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "export": "next build"
+    "export": "npm run build",
+    "test": "node --require ./tests/register.cjs tests/core.test.cjs",
+    "test:browser": "node tests/browser.mjs",
+    "inventory": "node scripts/inventory-resources.mjs",
+    "validate:paper": "node --require ./tests/register.cjs scripts/validate-paper.cjs",
+    "preview": "node scripts/serve-static.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",
     "next": "16.2.6",
+    "pdfjs-dist": "5.4.624",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },

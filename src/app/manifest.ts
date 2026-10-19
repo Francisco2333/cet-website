@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { APP_NAME } from "@/lib/const";
+import { assetUrl } from "@/lib/paths";
 
 export const dynamic = "force-static";
 
@@ -8,13 +9,13 @@ export default function manifest(): MetadataRoute.Manifest {
     name: APP_NAME,
     short_name: APP_NAME,
     description: "英语四六级备考一站式平台",
-    start_url: "/",
+    start_url: assetUrl("/"),
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#2563eb",
     icons: [
       {
-        src: "/favicon.svg",
+        src: assetUrl("/favicon.svg"),
         sizes: "any",
         type: "image/svg+xml",
         purpose: "maskable",

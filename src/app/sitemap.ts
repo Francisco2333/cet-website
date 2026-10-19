@@ -5,13 +5,14 @@ import { ALL_EXAMS } from "@/lib/library";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!APP_URL) return [];
   const base = APP_URL;
   const now = new Date();
 
   // 主页面
   const pages: MetadataRoute.Sitemap = [
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
-    { url: `${base}/library`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/practice/sample`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/library/cet4`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/library/cet6`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },

@@ -1,152 +1,129 @@
-# CET通 (cettong.cn)
+# CET 通 · 四六级在线练习
 
-> 一个完全免费、开源的四六级英语考试复习网站
-> 海量真题 · 模拟考试 · 智能错题本 · 一次过四六级
+Next.js 16.2.6、React 19、TypeScript、Tailwind CSS 4。无需数据库、账户或运行时后端，生产构建保持 `output: "export"`。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+## 项目来源
 
-🌐 官网：<https://cettong.cn>
+本项目基于开源项目 [whoamiARC/cet-website](https://github.com/whoamiARC/cet-website) 进行二次开发，遵循原项目适用的开源许可证。
 
-## ✨ 特色
+二次开发仓库：[Francisco2333/cet-website](https://github.com/Francisco2333/cet-website)，开发分支 `dev`。原 [LICENSE](./LICENSE) 的 MIT 版权和许可声明保持原样。MIT 仅适用于源代码；原项目收录的真题、解析和音频版权归各自权利人所有，仅供个人学习，不得用于商业用途或大规模传播。新增原创示例文本、题目和合成音频按 MIT 提供。
 
-- 📚 **覆盖 CET-4 / CET-6 双级别**：听力 / 阅读 / 翻译 / 写作 / 词汇 5 大模块
-- 🎯 **历年真题 + 模拟题**：2010-2025 完整题库
-- 🧠 **智能错题本**：自动归类，薄弱点精准突破
-- 📊 **真实考场模拟**：估分准确
-- 💻 **全平台响应式**：手机 / 平板 / 电脑都能用
-- 🆓 **永久免费**：所有功能对所有用户开放，**无套路、无广告、无会员**
+## 已实现功能与入口
 
-## 🛠 技术栈
+- `/library/cet4/`、`/library/cet6/`：真题列表，按本地文件显示预览、作答、答案和听力能力。
+- `/library/<level>/<testId>/`：统一工作台。桌面左侧 PDF、右侧完整答题区，窄屏自动上下排列；支持单页、单列连续和双页连续阅读，保留缩放、跳页、加载提示、失败降级和资源下载。
+- 同页完成听力、选词、信息匹配、阅读、翻译和作文。题号导航、进度、未答提醒、提交与继续修改；作答可导出为 JSON。
+- 音频播放器持续挂载，选答案、切换部分不会重载音频。手动开始播放，支持浏览器原生的进度、音量、暂停操作；移动设备可使用系统音量键。
+- 作答和计时保存在当前浏览器，刷新后恢复。计时器默认关闭，可选正向或自定义倒计时，支持暂停、继续、重置、关闭，到时不强制交卷。后台计时以真实时间差计算。
+- `/practice/sample/`：完整的原创 57 项结构化练习，包含 55 道可批改客观题、作文与翻译输入、原创合成听力。用于体验和自动化验证，篇幅与难度不代表官方考试。
+- 页头和工作台的「AI 设置」：可选的客户端自带密钥翻译及主观题模拟批改，支持明暗主题和响应式布局。
 
-- **框架**：[Next.js 16](https://nextjs.org) (App Router) + React 19
-- **样式**：TailwindCSS 4
-- **数据库**：SQLite / libSQL (Turso) via [Prisma 7](https://prisma.io)
-- **鉴权**：JWT (HTTP-Only Cookie)
-- **部署**：[Vercel](https://vercel.com) (全球 CDN + Edge)
+## 数据覆盖与评分边界
 
-## 🚀 快速开始
+截至本次本地核对：**93 套真题，93 个试卷 PDF、90 个答案 PDF、58 个 MP3**，覆盖 2019–2025 年。实际能力由 `src/lib/library-resources.json` 决定，构建前会核对是否与文件一致。
 
-### 本地开发
+| 模式 | 数据来源 | 作答 | 自动批改 |
+| --- | --- | --- | --- |
+| 真题 PDF＋答题卡 | 仓库现有原文件 | 55 道客观题记录＋作文＋翻译 | 无；答案 PDF 供自行核对 |
+| 原创结构化示例 | 项目原创题干、选项和作者答案 | 57 项完整流程 | 仅 55 道客观题正确数，不换算 CET 官方分数 |
+| 资源不完整 | 只暴露实际存在的文件 | 无试卷时标记仅下载 | 无 |
+
+现有真题**没有经过核验的结构化题干、选项和机读答案键**，不把 PDF 答案推测成评分数据。答题卡依据 [教育考试院公开的试卷结构](https://cet.neea.edu.cn/html1/folder/16113/1586-1.htm)：听力 1–25、选词 26–35、匹配 36–45、阅读 46–55，另有写作与翻译。首次使用须由学习者核对当前 PDF 题号；合卷、缺页以原卷为准。匹配题记录实际段落字母，不假设各卷的段落数量。
+
+PDF.js 在浏览器渲染本地 PDF，含文字层的页支持选择英文翻译，也可将选区填入作文要求或翻译原文；扫描页明确提示无法划词，本项目不执行 OCR。主观题默认只保存，用户明确点击后可独立请求 AI 模拟批改，不计入客观题结果。
+
+## PDF 阅读与双栏作答
+
+预览工具栏提供「单页翻页」「单列连续」「双页连续」。默认单列连续，模式和预览高度保存在浏览器。双页按 1/2、3/4 排列，奇数末页单独显示；窄屏保留偏好但自动使用单列。连续滚动时页码随当前位置更新，输入页码后按 Enter 或离开输入框可跳页。模式与缩放切换尽量保留当前页及页内位置。
+
+PDF 拥有独立滚动区，可选择紧凑/标准/加高并折叠。桌面三档分别以 75/80/85dvh 为目标，受 360–1120px 及视口预留 120px 的限制；三种阅读模式高度一致。窄屏改用约 65/70/75dvh，上限 700px，并预留操作空间。原有高度偏好自动沿用对应档位。双页默认同时适配宽度和高度，保持比例，奇数末页及用户主动缩放仍可滚动查看。
+
+仅视口附近页面渲染 canvas 和文字层，远页保留高度占位、释放画布像素和页面资源；单页还有像素预算限制。听力播放器独立持续挂载，阅读模式切换不会重载音频。
+
+桌面宽度至少 1100px 时，PDF/题目区与答题区按约 58%/42% 左右排列，各自独立滚动，互不带动；更窄时自然上下排列。答题区保留题型、题号导航、前后题、作文/翻译及 AI 批改和提交操作。「返回试卷查看原题」与「回到作答位置」可在两区间定位，不卸载播放器。结构化示例的题目区同样使用独立滚动空间。
+
+## 作文与翻译 AI 模拟批改
+
+1. 进入答题区的写作或翻译部分。填写「作文要求」或「翻译原文」，再填写英文作文/译文。真题没有预填的虚构原文；可信结构化示例会预填且允许编辑。也可在 PDF 文字层选择题目后点击「填入作文要求」或「填入翻译原文」。
+2. 题目和答案沿用同一试卷存档自动保存，刷新恢复。写作实时显示英文词数，四级参考不少于 120 词、六级不少于 150 词，以具体要求为准；不足不阻止编辑。
+3. 使用原有 AI 设置填写地址、模型和内存密钥。题目与英文答案齐全后，点击「AI 批改与修改建议」或「AI 翻译批改」。无需提交整卷，也不会自动请求。请求最长 60 秒，可取消；失败保留草稿并允许手动重试，不自动重复扣费。
+4. 反馈展示 0–15 模拟分、档次、理由、优点、主要问题和「真实原句 → 问题 → 建议表达」。参考作文/译文折叠展示，可复制，绝不自动替换原答案。翻译额外展示对照中文原文的修改和词组句型。
+
+评分参考 [全国大学英语四、六级考试大纲](https://cet.neea.edu.cn/res/Home/1704/55b02330ac17274664f06d9d3db8249d.pdf) 的总体印象原则，四级/六级分别提示语言能力要求。写作综合切题、内容、结构与语言，不按错误数量机械扣分；翻译优先核对信息传达，再评价语言，严重偏离原意不能仅凭流畅获得高分。学习反馈采用 13–15、10–12、7–9、4–6、1–3 和 0 分档。**AI 模拟评分，非官方成绩，不换算 710 分报道分。** 模型仍可能误判，需要自行核对。
+
+共享请求层发送明确 JSON Schema 格式要求并在客户端验证，不依赖供应商专属 structured-output API。校验范围、字段、档次一致性、原句是否逐字出现在用户答案中、翻译引用是否来自中文原文；拒绝非 JSON、虚构引用或明显自相矛盾的结果。题目最多 12000 字符、答案最多 20000 字符，AI 输出和响应体也有限制。
+
+评分保存题目及答案快照、级别、模型和时间，不保存密钥。修改题目或答案后旧评分立即标为过期；请求期间继续编辑也不会覆盖新草稿，返回反馈对应原请求版本。旧版存档兼容恢复。浏览器清除数据或存储失败仍须自行导出备份。
+
+## 本地运行与验证
+
+建议 Node.js **20.16+**（CI 使用 Node 20），使用 npm 和锁文件。
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/whoamiARC/cet-website.git
-cd cet-website
-
-# 2. 安装依赖
-npm install
-
-# 3. 配置环境变量
-cp .env.example .env
-# 编辑 .env，至少设置 JWT_SECRET
-
-# 4. 初始化数据库 + 种子数据
-npx prisma migrate dev
-npx prisma db seed
-
-# 5. 启动开发服务器
+npm ci
 npm run dev
 ```
 
-打开 <http://localhost:3000> 访问。
+访问 <http://localhost:3000>。`predev`、`prebuild` 会将安装的 PDF.js worker、字体、CMap、WASM 和许可证复制到 `public/pdfjs/`；这些生成文件不提交，运行时不依赖外部 CDN。
 
-### 管理员注册
-
-注册时使用 `.env` 中 `ADMIN_OPEN_CODE` 配置的万能验证码（默认 `888888`），可注册为管理员账号。
-
-## 📦 部署
-
-完整部署文档：
-
-- [DEPLOYMENT.md](./DEPLOYMENT.md) — 方案对比与原理
-- [DEPLOY_CHECKLIST.md](./DEPLOY_CHECKLIST.md) — 一步一步照着做
-
-**简要流程**：Vercel（部署）+ Turso（数据库）+ 域名（cettong.cn）= **0 月费**
-
-## 💖 支持作者
-
-这是一个 **完全免费** 的开源项目，**不强制打赏、不与功能挂钩**。
-
-如果觉得有帮助，可以：
-
-- ☕ [请我喝杯咖啡](./public/donate/)（微信/支付宝扫码）
-- ⭐ 给项目点个 Star
-- 🐛 提 Issue / 提交 PR
-- 📢 推荐给身边的同学
-
-你的支持是我持续更新的最大动力 ❤️
-
-## 🗂 项目结构
-
-```
-cet-website/
-├── prisma/                  # 数据库 schema 与迁移
-│   ├── schema.prisma        # 数据模型
-│   ├── migrations/          # 迁移历史
-│   └── seed.ts              # 种子数据（题库分类、会员套餐）
-├── public/
-│   ├── donate/              # 收款码图片（自己上传）
-│   ├── favicon.svg          # 站点图标
-│   └── og-image.png         # 社交分享预览图
-├── src/
-│   ├── app/                 # Next.js App Router
-│   │   ├── api/             # API 路由
-│   │   ├── admin/           # 管理后台（鉴权保护）
-│   │   ├── about/           # 关于我们
-│   │   ├── contact/         # 联系客服
-│   │   ├── dashboard/       # 用户中心
-│   │   ├── exam/            # 模拟考试
-│   │   ├── faq/             # 常见问题
-│   │   ├── library/         # 真题库
-│   │   ├── login/           # 登录
-│   │   ├── practice/        # 题库练习
-│   │   ├── privacy/         # 隐私政策
-│   │   ├── register/        # 注册
-│   │   ├── support/         # 支持作者（打赏）
-│   │   ├── terms/           # 服务条款
-│   │   └── wrong/           # 错题本
-│   ├── components/          # 通用组件
-│   ├── hooks/               # React hooks
-│   ├── lib/                 # 业务工具
-│   │   ├── prisma.ts        # Prisma client 单例
-│   │   ├── auth.ts          # JWT 鉴权
-│   │   ├── sms.ts           # 短信服务（mock）
-│   │   └── utils.ts
-│   └── generated/prisma/    # Prisma 生成的客户端（自动生成）
-├── next.config.ts
-├── vercel.json              # Vercel 部署配置
-├── tailwind.config.ts
-├── tsconfig.json
-└── package.json
+```bash
+npm test
+npm run lint
+npx tsc --noEmit
+npm run build
+npm run preview
 ```
 
-## 🤝 贡献
+`npm run preview` 将 `out/` 静态内容提供到 <http://127.0.0.1:4173>，支持音频 Range 请求。不要使用 `npm run start` 预览静态导出。`npm run export` 等同于构建。
 
-欢迎各种形式的贡献：
+自动化单元测试使用现有 TypeScript 与 Node 内置 test，覆盖导入校验、资源一致性、保存恢复、计分、计时、未配置 AI、HTTP 认证/额度/服务失败、网络/CORS 失败。没有新增测试框架依赖。
 
-- 🐛 报告 Bug / 提出功能建议 → [Issues](../../issues)
-- 🔧 提交代码 → [Pull Requests](../../pulls)
-- 📝 完善文档
-- 🎨 设计改进
-- ➕ 补充真题
+浏览器脚本使用已安装的 Playwright 或 playwright-core，不自动安装或下载。通过环境变量指定模块路径，例如 PowerShell：
 
-## 📄 License
+```powershell
+$env:PLAYWRIGHT_MODULE = '已安装的 playwright-core 模块目录'
+npm run test:browser
+```
 
-源代码遵循 [MIT](./LICENSE) 协议 —— 你可以自由使用、修改、分发。
+测试从 `out/` 启动仅监听本机的临时静态服务和兼容 API 测试服务，执行后关闭。覆盖真实 PDF、下载、音频连续性、真实点击填完整卷、恢复、AI 配置与失败、计时、404 和响应式布局。截图及结果写入忽略提交的 `test-results/`。AI 测试使用本机固定响应的兼容 HTTP 服务，**不等于验证外部模型翻译质量或可用额度**。
 
-平台内容（题目、解析、音频）仅供个人学习，请勿用于商业用途或大规模传播。
+## AI 配置、密钥与部署限制
 
-## 🙏 致谢
+1. 打开「AI 设置」，填写 **Base URL**（例如提供商文档中的 `https://服务地址/v1`）、**API Key** 和 **Model**。也接受完整 `/chat/completions` 端点。
+2. 点击「测试连接」会发出一条简短翻译请求，可能消耗提供商额度；成功后保存。
+3. 在题干、文章或 PDF 的英文文字层中划词/划句，点击「翻译」。单次最多 2000 字符，25 秒超时，不自动重试；相同文本在当前页面内存中复用结果。
 
-- [Next.js](https://nextjs.org) - 强大的 React 框架
-- [Vercel](https://vercel.com) - 部署平台
-- [Turso](https://turso.com) - 边缘 SQLite 数据库
-- [Prisma](https://prisma.io) - 类型安全的 ORM
-- [Tailwind CSS](https://tailwindcss.com) - CSS 框架
-- [lucide](https://lucide.dev) - 图标库
+未配置时点击立即提示「请先在 AI 设置中配置 API 信息。」并提供设置入口；配置后显示加载、结果或可重试错误。选区文本在内存中缓存，弹窗内部点击不会重新捕获选区或取消刚发出的请求，滚动长译文也不会关闭浮层。认证、地址/模型、额度、超时及响应格式都有对应提示；网络失败和 CORS 在浏览器中可能表现为同一种错误，界面会明确说明这一限制。
 
----
+密钥默认且始终只存在**当前页面内存**和认证请求头，不写入 localStorage、URL、日志或仓库。刷新或关闭标签页后须重新填写；「清除密钥」可即时清除。仅 Base URL 和模型偏好保存到浏览器。不要在地址或模型中填写密钥。
 
-**让每一位四六级考生都能一次过线** 🎓
+选区文本或批改的完整题目与答案会发送至用户配置的第三方，服务可能收费。仅允许 HTTPS 地址；本机 HTTP 可用于调试。不加载或执行 AI 返回的 HTML。认证失败、额度/频率限制、服务异常、超时和网络失败均有提示；浏览器无法精确区分网络错误与 CORS 错误。
+
+纯静态站点没有 Next.js 运行时 API Routes。提供商须允许浏览器 CORS 跨域调用。不能跨域的服务需要**由使用者自行控制、信任且正确限制访问的后端**，不能由客户端绕过；本项目没有公开代理，不自带真实 Key。未配置 AI 时所有普通功能均可使用。
+
+## 静态部署（包括 GitHub Pages）
+
+根域部署时不设置 `NEXT_PUBLIC_BASE_PATH`。仓库子路径部署要在构建时设置，例如 PowerShell：
+
+```powershell
+$env:NEXT_PUBLIC_BASE_PATH = '/cet-website'
+$env:NEXT_PUBLIC_APP_URL = 'https://francisco2333.github.io/cet-website'
+npm run build
+npm run preview
+```
+
+此时本地预览访问 `http://127.0.0.1:4173/cet-website/`。公开地址可选；未配置时不生成虚假的 sitemap 域名。`NEXT_PUBLIC_APP_URL` 是完整站点根地址，可含仓库子路径，不含结尾斜杠。路径与地址在构建时写入静态资源，变更需重新构建。
+
+`next.config.ts` 保持 `output: "export"`、`images.unoptimized`，启用 `trailingSlash` 供静态目录路由使用。页面链接、PDF、音频及 PDF worker 均支持子路径。GitHub Actions 使用 npm ci 和 Node 20，工作流中已配置 Fork 的路径及地址，移除原站 CNAME，不会把 `dev` 的本地修改自动推送。推送触发分支仍为原有 `main`/`master`；需要时可在 GitHub 手动执行 workflow_dispatch。
+
+发布 `out/` 即可，目录含 `.nojekyll`。不提交 `node_modules/`、`.next/`、`out/`、API Key 或 `.env*`。没有新增数据库、云服务、分析统计或广告。
+
+## 维护题库与导入结构化题目
+
+- 真题资源：`public/library/<level>/<testId>/test.pdf`、`answer.pdf`、`listening.mp3`；索引在 `src/lib/library.ts`。更新本地资源后运行 `npm run inventory`，核对生成清单并提交。
+- 统一模型：`src/lib/exam.ts`，包括试卷 ID、级别、年份、修订版、模式、来源、资源 URL、题型、题号、题干、选项、标准答案、解析及音频片段关联。原创完整实例：`src/lib/sample-paper.ts`。
+- 导入前将受许可的题目整理为 `PracticePaper` 对应 JSON，运行 `npm run validate:paper -- path/to/paper.json`。校验拒绝重复题号、非法选项或答案、缺失的题干和答案来源；**不会验证版权或答案事实正确性，也不会自动发布**。
+- 人工核对授权、题号和答案后，在服务端页面导入该数据，先运行 `validatePaper`，再传给 `ExamWorkspace`（参考 `src/app/practice/sample/page.tsx`）。变更题目时增加 `revision`，避免旧记录错配。只有 `structured` 模式且声明可信 `answerSource` 的客观题可批改。
+- 原创听力文本及答案在 `src/data/sample-listening.json`。已提交可播放的 WAV；可在安装了英语语音的 Windows 上运行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/generate-example-audio.ps1` 离线重建。构建不依赖 Windows 语音组件。
+
+`scripts/sync-from-wehuster.ts` 是原项目的外部同步脚本，本次未运行。它会访问外站及写资源，使用前需另行确认授权和版权，不能当作未经核实的自动数据来源。

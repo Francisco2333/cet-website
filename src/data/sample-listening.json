@@ -1,0 +1,52 @@
+[
+  {
+    "text": "Questions one to five. The campus library is opening a quiet study room on Monday. It is on the second floor, beside the history collection. Students must book a desk online. Each booking lasts two hours. Please leave food outside the room. Water in a closed bottle is welcome.",
+    "questions": [
+      ["When will the quiet room open?", ["Monday", "Tuesday", "Friday", "Sunday"], "A", "录音明确说 on Monday。"],
+      ["Where is the new room?", ["On the ground floor", "On the second floor", "In a separate building", "In the basement"], "B", "录音提到 second floor。"],
+      ["What is beside the room?", ["A cafe", "A computer lab", "The history collection", "A garden"], "C", "房间位于历史书区旁。"],
+      ["How should students book a desk?", ["By letter", "At the gate", "Through a teacher", "Online"], "D", "学生须在网上预约。"],
+      ["How long does each booking last?", ["Two hours", "One hour", "Three hours", "A full day"], "A", "每次预约两小时。"]
+    ]
+  },
+  {
+    "text": "Questions six to ten. A student cycling club will meet at the north gate this Saturday at nine in the morning. The route is twelve kilometres long. Members should bring a helmet. The club will lend lights to anyone who needs them. If heavy rain is forecast, the ride will move to Sunday.",
+    "questions": [
+      ["Where will the club meet?", ["At the south gate", "At the north gate", "At the station", "At the sports hall"], "B", "集合地点为 north gate。"],
+      ["What time is the meeting?", ["Seven", "Eight", "Nine", "Ten"], "C", "上午九点集合。"],
+      ["How long is the route?", ["Two kilometres", "Six kilometres", "Ten kilometres", "Twelve kilometres"], "D", "路线长十二公里。"],
+      ["What must members bring?", ["A helmet", "A camera", "A map", "A tent"], "A", "参与者应自带头盔。"],
+      ["What can the club lend?", ["Shoes", "Lights", "Bicycles", "Coats"], "B", "俱乐部提供车灯借用。"]
+    ]
+  },
+  {
+    "text": "Questions eleven to fifteen. The community garden needs volunteers on Wednesday afternoon. Work begins at two and ends at four. New volunteers will learn to plant beans. Tools are provided, but everyone should wear strong shoes. The vegetables grown here are shared with a nearby community kitchen.",
+    "questions": [
+      ["When does the garden need help?", ["Monday morning", "Tuesday evening", "Wednesday afternoon", "Friday night"], "C", "时间为周三下午。"],
+      ["When does the work begin?", ["At eleven", "At twelve", "At one", "At two"], "D", "录音明确说 begins at two。"],
+      ["What will new volunteers plant?", ["Beans", "Trees", "Flowers", "Rice"], "A", "新志愿者学习种豆子。"],
+      ["What should volunteers wear?", ["Formal clothes", "Strong shoes", "A uniform", "Thin slippers"], "B", "应穿结实的鞋。"],
+      ["Who receives some of the vegetables?", ["A supermarket", "A hotel", "A community kitchen", "A sports club"], "C", "蔬菜与附近的社区厨房分享。"]
+    ]
+  },
+  {
+    "text": "Questions sixteen to twenty. A small museum is offering a free workshop on repairing household objects. It takes place on the first Sunday of each month. Participants can bring one broken item. An experienced engineer will guide them. Booking closes three days before the workshop. Children under twelve must come with an adult.",
+    "questions": [
+      ["How much does the workshop cost?", ["Five pounds", "Ten pounds", "Twenty pounds", "Nothing"], "D", "活动是免费的。"],
+      ["How often is the workshop held?", ["Once a month", "Every day", "Twice a week", "Once a year"], "A", "每月第一个周日举办。"],
+      ["How many broken items may each person bring?", ["None", "One", "Two", "Five"], "B", "每人可以带一件物品。"],
+      ["Who will guide participants?", ["A musician", "A gardener", "An engineer", "A doctor"], "C", "由有经验的工程师指导。"],
+      ["When does booking close?", ["On the day", "One day before", "A week before", "Three days before"], "D", "预约在活动前三天截止。"]
+    ]
+  },
+  {
+    "text": "Questions twenty-one to twenty-five. A research team studied how students use short breaks. Sixty students took part for four weeks. Half walked outdoors during their breaks; the others stayed at their desks. The walking group reported feeling more alert. The researchers did not measure exam scores, so they cannot say that walking improved grades.",
+    "questions": [
+      ["How many students took part?", ["Sixty", "Sixteen", "Thirty", "Forty"], "A", "共有六十名学生参加。"],
+      ["How long did the study last?", ["Two days", "Four weeks", "Six months", "One year"], "B", "研究持续四周。"],
+      ["What did half of the students do during breaks?", ["Sleep", "Read", "Walk outdoors", "Play games"], "C", "一半学生在户外步行。"],
+      ["How did the walking group report feeling?", ["More anxious", "Less interested", "More tired", "More alert"], "D", "步行组自报更清醒。"],
+      ["What did the researchers NOT measure?", ["Exam scores", "The number of students", "Study duration", "Break activities"], "A", "研究未测量考试分数，不能推出提高成绩。"]
+    ]
+  }
+]

@@ -3,6 +3,7 @@
  * 用法: npx tsx scripts/sync-from-wehuster.ts
  */
 import * as https from "https";
+import type { ClientRequest } from "http";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -30,7 +31,7 @@ function get(urlPath: string): Promise<string> {
         res.on("data", (c) => (data += c));
         res.on("end", () => resolve(data));
       }
-    ).on("error", (e) => resolve("")).setTimeout(15000, function(this: any) { this.destroy(); resolve(""); });
+    ).on("error", () => resolve("")).setTimeout(15000, function(this: ClientRequest) { this.destroy(); resolve(""); });
   });
 }
 
@@ -73,7 +74,7 @@ async function downloadFile(urlPath: string, destPath: string): Promise<boolean>
     ).on("error", () => {
       try { fs.unlinkSync(destPath); } catch {}
       resolve(false);
-    }).setTimeout(30000, function(this: any) { this.destroy(); resolve(false); });
+    }).setTimeout(30000, function(this: ClientRequest) { this.destroy(); resolve(false); });
   });
 }
 

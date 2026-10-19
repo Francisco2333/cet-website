@@ -1,0 +1,467 @@
+{
+  "cet4/2019_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2019_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2019_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2019_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2019_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2019_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2020_07_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2020_09_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2020_09_2": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2020_09_3": {
+    "paper": true,
+    "answer": false,
+    "audio": false
+  },
+  "cet4/2020_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2020_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2020_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2021_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2021_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2021_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2021_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2021_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2021_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2022_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2022_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2022_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2022_09_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2022_09_2-3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2022_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2022_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2022_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2023_03_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2023_03_2-3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2023_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2023_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2023_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2023_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2023_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2023_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2024_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2024_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2024_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2024_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2024_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2024_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2025_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2025_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2025_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet4/2025_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2025_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet4/2025_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2019_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2019_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2019_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2019_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2019_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2019_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2020_07_1": {
+    "paper": true,
+    "answer": false,
+    "audio": true
+  },
+  "cet6/2020_09_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2020_09_2": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2020_09_3": {
+    "paper": true,
+    "answer": false,
+    "audio": false
+  },
+  "cet6/2020_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2020_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2020_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2021_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2021_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2021_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2021_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2021_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2021_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2022_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2022_06_2-3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2022_09_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2022_09_2-3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2022_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2022_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2022_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2023_03_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2023_03_2-3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2023_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2023_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2023_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2023_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2023_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2023_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2024_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2024_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2024_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2024_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2024_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2024_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2025_06_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2025_06_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2025_06_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  },
+  "cet6/2025_12_1": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2025_12_2": {
+    "paper": true,
+    "answer": true,
+    "audio": true
+  },
+  "cet6/2025_12_3": {
+    "paper": true,
+    "answer": true,
+    "audio": false
+  }
+}

@@ -1,77 +1,15 @@
-import type { Metadata } from "next";
-import { APP_NAME } from "@/lib/const";
-
-export const metadata: Metadata = {
-  title: "常见问题",
-  description: `${APP_NAME} 常见问题解答。`,
-};
-
-const FAQS = [
-  {
-    cat: "关于 CET通",
-    items: [
-      { q: "CET通是什么？", a: `${APP_NAME} 是一个英语四六级备考信息平台，提供四六级考试相关的资讯和学习指导。` },
-      { q: "这个网站收费吗？", a: "完全免费。所有内容对所有用户永久免费开放，不需要付费、不需要注册。我们相信好的教育资源应该是免费的。" },
-      { q: "内容会更新吗？", a: "我们会持续关注四六级考试最新动态，及时更新考试相关信息。" },
-    ],
-  },
-  {
-    cat: "关于四六级考试",
-    items: [
-      { q: "四级和六级有什么区别？", a: "四级（CET-4）要求词汇量约 4500，侧重基础英语应用能力；六级（CET-6）要求词汇量约 6000，难度更高，侧重学术英语能力。" },
-      { q: "四六级考试每年几次？", a: "每年两次，分别在 6 月和 12 月。报名时间一般在考前 2-3 个月。" },
-      { q: "四六级多少分算过？", a: "四级和六级均以 425 分为及格线。550 分以上为优秀。" },
-      { q: "考试包含哪些部分？", a: "主要包含：听力理解、阅读理解、翻译（汉译英）和写作四大部分。" },
-    ],
-  },
-  {
-    cat: "其他问题",
-    items: [
-      { q: "可以商用吗？", a: "本项目代码遵循 MIT 协议可自由使用，但平台内容仅供个人学习参考，请勿用于商业用途或大规模传播。" },
-      { q: "如何联系站长？", a: "添加微信 coscoscosx，或发邮件至 hushuhushuyuyu@gmail.com。" },
-      { q: "网站源码可以看吗？", a: "可以，完全开源。GitHub 主页：https://github.com/whoamiARC，欢迎 Star ⭐" },
-    ],
-  },
+import Link from "next/link";
+export const metadata = { title: "使用帮助" };
+const entries = [
+  ["如何开始整卷练习？", "进入四级或六级题库，选择试卷。核对 PDF 题号后启用答题卡。写作、听力、选词、匹配、阅读与翻译可在同页切换，提交前会提醒未答项。桌面左侧预览、右侧答题并独立滚动；窄屏自动上下排列，可通过定位按钮快速往返。"],
+  ["为什么真题没有自动分数？", "现有资源是 PDF 和音频，未导入可信标准答案键，请用答案 PDF 自行核对。原创示例支持客观题批改；写作和翻译可在补全题目与答案后，使用自配 API 独立批改，AI 模拟评分非官方成绩。"],
+  ["如何使用多页 PDF 和主观题批改？", "阅读工具栏支持单页、单列连续和双页连续；窄屏双页自动单列。输入页码可跳页，也可调整高度或折叠。下方作文要求/翻译原文与英文答案会自动保存；AI 批改只在点击时请求，编辑题目或答案后旧评分标为过期，不自动替换作答。"],
+  ["刷新后作答和计时会丢失吗？", "作答和计时状态保存在当前浏览器，刷新可恢复；清除站点数据或更换浏览器无法恢复。正在运行的计时通过真实时间差计算，后台时间也计入，暂停时停止累计。计时器默认关闭，到时不会自动交卷。"],
+  ["如何边听边答？", "点击工作台的音频播放器开始播放，再选择听力选项。播放器不会因选择答案或切换试卷部分而卸载。不自动播放；移动浏览器的音量也可通过系统音量键调节。"],
+  ["PDF 无法预览或不能划词？", "可尝试重载、新窗口打开或下载原文件。扫描页没有可选文字，不支持划词翻译；本平台不执行 OCR。合卷题号、缺页或录音缺失以收录文件为准。"],
+  ["AI 如何配置？", "打开 AI 设置，填写兼容 Chat Completions 的 Base URL（通常以 /v1 结尾）、Key 和模型，点击测试连接再保存。密钥仅存内存，刷新需重填。划选英文后点击翻译才会发送文本，每次最多 2000 字符。"],
+  ["AI 提示网络或跨域失败怎么办？", "浏览器不能精确区分网络和 CORS 错误。确认网络、地址及提供商的浏览器跨域支持。不支持跨域的接口须通过你信任的自建后端使用；静态页面不能绕过 CORS。本项目没有公开代理或运行时 API Routes。"],
 ];
-
 export default function FaqPage() {
-  return (
-    <div className="animate-fade-in py-12">
-      <div className="container mx-auto max-w-3xl px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">常见问题</h1>
-          <p className="text-muted">找不到答案？联系微信：coscoscosx</p>
-        </div>
-
-        {FAQS.map((cat, i) => (
-          <div key={i} className="mb-10">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-1 h-6 bg-primary rounded"></span>
-              {cat.cat}
-            </h2>
-            <div className="space-y-3">
-              {cat.items.map((item, j) => (
-                <details key={j} className="group bg-white dark:bg-slate-800 border border-border rounded-xl p-4">
-                  <summary className="font-medium cursor-pointer flex items-center justify-between">
-                    {item.q}
-                    <span className="text-muted group-open:rotate-180 transition-transform text-sm">▼</span>
-                  </summary>
-                  <p className="text-muted text-sm mt-2 leading-relaxed">{item.a}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-2xl p-8 text-center">
-          <h3 className="text-xl font-bold mb-2">还有其他问题？</h3>
-          <p className="text-muted mb-4">添加微信，1对1 解答</p>
-          <div className="inline-block px-6 py-3 bg-white dark:bg-slate-800 rounded-xl border-2 border-primary">
-            <p className="text-xs text-muted">联系微信</p>
-            <p className="text-lg font-bold text-primary">coscoscosx</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <article className="prose-page"><h1>使用帮助</h1><div className="space-y-3">{entries.map(([q, a]) => <details key={q} className="panel p-4"><summary className="font-medium">{q}</summary><p className="mt-3 text-sm">{a}</p></details>)}</div><p className="mt-6"><Link href="/practice/sample">体验完整原创练习</Link> · <Link href="/contact">反馈问题</Link></p></article>;
 }

@@ -2,49 +2,9 @@ import Link from "next/link";
 import { APP_NAME } from "@/lib/const";
 
 export function Footer() {
-  return (
-    <footer className="glass border-t border-white/40 py-10 mt-16">
-      <div className="container mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-6">
-          <div>
-            <h3 className="font-semibold mb-3 text-sm">产品</h3>
-            <ul className="space-y-2 text-sm text-muted">
-              <li><Link href="/library/cet4" className="hover:text-foreground">四级真题</Link></li>
-              <li><Link href="/library/cet6" className="hover:text-foreground">六级真题</Link></li>
-              <li><Link href="/about" className="hover:text-foreground">关于我们</Link></li>
-              <li><Link href="/faq" className="hover:text-foreground">常见问题</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-3 text-sm">帮助</h3>
-            <ul className="space-y-2 text-sm text-muted">
-              <li><Link href="/about" className="hover:text-foreground">关于我们</Link></li>
-              <li><Link href="/faq" className="hover:text-foreground">常见问题</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-3 text-sm">社区</h3>
-            <ul className="space-y-2 text-sm text-muted">
-              <li><span className="text-blue-500">🐧 QQ群：730715477</span></li>
-              <li><Link href="/contact" className="hover:text-foreground">联系我们</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-3 text-sm">法律</h3>
-            <ul className="space-y-2 text-sm text-muted">
-              <li><Link href="/terms" className="hover:text-foreground">服务条款</Link></li>
-              <li><Link href="/privacy" className="hover:text-foreground">隐私政策</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-muted">
-          <div className="flex items-center gap-4">
-            <p>© {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
-            <a href="https://www.ifdian.net/a/iam_ARC" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-600 transition-colors">❤️ 爱发电支持作者</a>
-          </div>
-          <p>本平台仅供学习交流使用 · 完全免费</p>
-        </div>
-      </div>
-    </footer>
-  );
+  return <footer className="site-footer"><div className="max-w-7xl mx-auto space-y-5">
+    <div className="flex flex-wrap justify-between gap-4 text-sm"><span className="font-medium">{APP_NAME} · 把时间留给练习</span><nav aria-label="页脚导航" className="flex flex-wrap gap-5 text-muted"><Link href="/about">关于</Link><Link href="/faq">帮助</Link><Link href="/contact">问题反馈</Link><Link href="/privacy">隐私</Link><Link href="/terms">条款与版权</Link></nav></div>
+    <p className="text-xs text-muted leading-6">本项目基于开源项目 <a href="https://github.com/whoamiARC/cet-website" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">whoamiARC/cet-website</a> 进行二次开发，遵循原项目适用的开源许可证。</p>
+    <p className="text-xs text-muted">MIT 许可仅适用于源代码；真题、解析与音频版权归各自权利人所有，仅供个人学习。</p>
+  </div></footer>;
 }
