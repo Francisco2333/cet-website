@@ -268,3 +268,68 @@ for (const [status, pattern] of [[400, /Base URL.*Model/], [404, /Base URL.*Mode
 test("网络或 CORS 拒绝时结束加载并提示跨域限制", async () => {
   await assert.rejects(() => requestTranslation({ baseUrl: "https://example.com/v1", model: "demo", apiKey: "secret" }, "hello", undefined, async () => { throw new TypeError("Failed to fetch"); }), /网络.*CORS/);
 });
+
+test("v1 作答升级保留草稿，v2 恢复题号和独立 PDF 位置", () => {
+  const p = paper(), storage = memoryStorage(), a = newAttempt(p);
+  a.answers.writing = "My previous draft.";
+  a.navigation = { sectionId: "translation", questionId: "translation" };
+  a.pdf = { paper: { mode: "spread", height: 720, page: 3, zoom: 1.25, fraction: 0.4, scrollLeft: 20 } };
+  saveAttempt(storage, p, a);
+  const restored = loadAttempt(storage, p);
+  assert.equal(restored.version, 2);
+  assert.equal(restored.navigation.questionId, "translation");
+  assert.equal(restored.pdf.paper.page, 3);
+  a.version = 1; delete a.navigation; delete a.pdf; delete a.reviewHistory;
+  saveAttempt(storage, p, a);
+  const migrated = loadAttempt(storage, p);
+  assert.equal(migrated.version, 2);
+  assert.equal(migrated.answers.writing, "My previous draft.");
+  assert.deepEqual(migrated.reviewHistory, {});
+});
+
+test("AI 凭据须主动记住；取消记住及清除只删除指定配置", () => {
+  const { readAiSettings, writeAiSettings, forgetAiKey, clearAiSettings } = require("../src/lib/ai-credentials.ts");
+  const data = new Map(), storage = { getItem: (k) => data.get(k) ?? null, setItem: (k, v) => data.set(k, v), removeItem: (k) => data.delete(k) };
+  const config = { baseUrl: "https://example.com/v1", model: "model", apiKey: "private-test-key" };
+  writeAiSettings(storage, config, false);
+  assert.equal(readAiSettings(storage).config.apiKey, "");
+  writeAiSettings(storage, config, true);
+  assert.deepEqual(readAiSettings(storage), { config, remember: true });
+  forgetAiKey(storage);
+  assert.equal(readAiSettings(storage).config.apiKey, "");
+  assert.equal(JSON.stringify([...data.values()]).includes(config.apiKey), false);
+  assert.equal(readAiSettings(storage).config.model, "model");
+  writeAiSettings(storage, config, true);
+  writeAiSettings(storage, config, false);
+  assert.equal(readAiSettings(storage).remember, false);
+  assert.equal(JSON.stringify([...data.values()]).includes(config.apiKey), false);
+  storage.setItem("theme", "dark"); clearAiSettings(storage);
+  assert.equal(readAiSettings(storage).config.model, "");
+  assert.equal(storage.getItem("theme"), "dark");
+});
+
+test("练习备份剔除凭据且旧单卷备份可恢复；拒绝错误版本、字段和体积", () => {
+  const { exportPracticeBackup, parsePracticeBackup, makePracticeRecord } = require("../src/lib/practice-data.ts");
+  const p = SAMPLE_PAPER, a = newAttempt(p);
+  a.answers.writing = "My saved essay."; a.updatedAt = 100;
+  a.apiKey = "private-test-key"; a.timer.apiKey = "private-test-key";
+  const record = makePracticeRecord(p, a);
+  record.apiKey = "private-test-key";
+  const backup = exportPracticeBackup([record]);
+  assert.equal(backup.includes("private-test-key"), false);
+  assert.equal(parsePracticeBackup(backup)[0].attempt.answers.writing, "My saved essay.");
+  const legacy = JSON.stringify({ paperId: p.id, level: p.level, ...a, version: 1 });
+  assert.equal(parsePracticeBackup(legacy)[0].attempt.version, 2);
+  const clearedLegacy = JSON.parse(legacy); clearedLegacy.answers["1"] = "";
+  assert.equal(parsePracticeBackup(JSON.stringify(clearedLegacy))[0].attempt.answers["1"], undefined);
+  const invalid = JSON.parse(backup); invalid.version = 999;
+  assert.throws(() => parsePracticeBackup(JSON.stringify(invalid)), /版本/);
+  const invalidAnswer = JSON.parse(backup); invalidAnswer.records[0].attempt.answers["1"] = "Z";
+  assert.throws(() => parsePracticeBackup(JSON.stringify(invalidAnswer)), /字段|答案/);
+  const invalidTimer = JSON.parse(backup); invalidTimer.records[0].attempt.timer.startedAt = "bad";
+  assert.throws(() => parsePracticeBackup(JSON.stringify(invalidTimer)), /计时|字段/);
+  const invalidReview = JSON.parse(backup); invalidReview.records[0].attempt.reviewHistory.writing = [{}];
+  assert.throws(() => parsePracticeBackup(JSON.stringify(invalidReview)), /批改|字段/);
+  assert.throws(() => parsePracticeBackup(" ".repeat(10 * 1024 * 1024 + 1)), /10 MB/);
+  assert.throws(() => parsePracticeBackup(JSON.stringify({ version: 1, format: "cet-practice-backup", records: [record, record] })), /重复/);
+});

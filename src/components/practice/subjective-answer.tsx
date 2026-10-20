@@ -11,17 +11,20 @@ interface Props {
   source: string;
   answer: string;
   review?: SavedReview;
+  history?: SavedReview[];
   readOnly: boolean;
   onSource: (text: string) => void;
   onAnswer: (text: string) => void;
   onReview: (review: SavedReview) => void;
 }
 
-export function SubjectiveAnswer({ kind, level, source, answer, review, readOnly, onSource, onAnswer, onReview }: Props) {
+export function SubjectiveAnswer({ kind, level, source, answer, review: latestReview, history, readOnly, onSource, onAnswer, onReview }: Props) {
   const { config, openSettings } = useAi();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState("");
+  const [selectedAt, setSelectedAt] = useState<number | null>(null);
+  const review = history?.find((item) => item.createdAt === selectedAt) ?? latestReview;
   const request = useRef<AbortController | null>(null);
   const writing = kind === "writing";
   const input = { kind, level, source, answer };
@@ -39,7 +42,7 @@ export function SubjectiveAnswer({ kind, level, source, answer, review, readOnly
     request.current = controller; setBusy(true); setError("");
     try {
       const result = await requestReview(config, input, controller.signal);
-      if (!controller.signal.aborted) onReview({ ...input, result, createdAt: Date.now(), model: config.model });
+      if (!controller.signal.aborted) { setSelectedAt(null); onReview({ ...input, result, createdAt: Date.now(), model: config.model }); }
     } catch (e) {
       if (!controller.signal.aborted) setError(e instanceof Error ? e.message : "批改失败，原文和答案已保留。");
     } finally {
@@ -74,9 +77,11 @@ export function SubjectiveAnswer({ kind, level, source, answer, review, readOnly
       {busy && <p className="text-sm text-muted" role="status">正在评价本次题目和答案，最长等待 60 秒；可取消，也可继续编辑。</p>}
       {error && <p className="text-sm text-danger" role="alert">{error}</p>}
     </div>
+    {!!history?.length && history.length > 1 && <label className="field-label mb-4">查看批改历史<select className="text-field" aria-label="查看批改历史" value={selectedAt ?? "latest"} onChange={(e) => setSelectedAt(e.target.value === "latest" ? null : Number(e.target.value))}><option value="latest">最新批改</option>{history.slice(0, -1).map((item, index) => <option key={index} value={item.createdAt}>第 {index + 1} 次 · {new Date(item.createdAt).toLocaleString("zh-CN")} · {item.result.score}/15</option>)}</select></label>}
     {review && <section className={`review-feedback ${stale ? "stale" : ""}`} aria-label={writing ? "作文批改反馈" : "翻译批改反馈"}>
       <div className="review-score"><h3 className="font-semibold">{stale ? "已过期的模拟评分" : "AI 模拟评分"}</h3><span className="font-semibold tabular-nums">{review.result.score}<span className="font-normal text-sm text-muted"> / 15 · {review.result.band}</span></span></div>
       <p className="text-xs text-muted mb-3">上次批改：{new Date(review.createdAt).toLocaleString("zh-CN")} · {review.model} · 非官方成绩</p>
+      <details className="reference-details"><summary>查看本次题目与作答版本</summary><p className="whitespace-pre-wrap mt-3">{review.source}</p><p className="whitespace-pre-wrap english-passage mt-3">{review.answer}</p></details>
       {stale && <p className="notice-box text-sm mb-4" role="status">题目或答案已修改，以下反馈仅对应旧版本，请重新批改。</p>}
       <h4>评分理由</h4><p>{review.result.reason}</p>
       <h4>{writing ? "优点" : "正确或优秀的表达"}</h4><ul>{review.result.strengths.length ? review.result.strengths.map((text, i) => <li key={i}>{text}</li>) : <li>本次反馈未列出明确优点。</li>}</ul>

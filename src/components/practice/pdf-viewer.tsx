@@ -5,22 +5,23 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { ChevronLeft, ChevronRight, ExternalLink, Minus, Plus } from "lucide-react";
 import { assetUrl } from "@/lib/paths";
 import { PdfPage, type PdfPageState } from "./pdf-page";
+import type { PdfReadingState } from "@/lib/attempt";
 
 type ReadingMode = "single" | "continuous" | "spread";
-function preferences(): { mode: ReadingMode; height: number } {
+function preferences(): { mode: ReadingMode; height: number; error: string } {
   try {
     const saved = JSON.parse(localStorage.getItem("cet:pdf-preferences") || "{}");
-    return { mode: ["single", "continuous", "spread"].includes(saved.mode) ? saved.mode : "continuous", height: [400, 560, 720].includes(saved.height) ? saved.height : 560 };
-  } catch { return { mode: "continuous", height: 560 }; }
+    return { mode: ["single", "continuous", "spread"].includes(saved.mode) ? saved.mode : "continuous", height: [400, 560, 720].includes(saved.height) ? saved.height : 560, error: "" };
+  } catch { return { mode: "continuous", height: 560, error: "无法读取阅读偏好，本次使用默认设置。" }; }
 }
 
-export function PdfViewer({ url, title }: { url: string; title: string }) {
+export function PdfViewer({ url, title, initialState, onStateChange }: { url: string; title: string; initialState?: PdfReadingState; onStateChange: (state: PdfReadingState) => void }) {
   const container = useRef<HTMLDivElement>(null);
   const [document, setDocument] = useState<PDFDocumentProxy | null>(null);
-  const [settings, setSettings] = useState(preferences);
-  const [page, setPage] = useState(1);
-  const [pageInput, setPageInput] = useState("1");
-  const [zoom, setZoom] = useState(1);
+  const [settings, setSettings] = useState(() => initialState ? { mode: initialState.mode, height: initialState.height, error: "" } : preferences());
+  const [page, setPage] = useState(initialState?.page ?? 1);
+  const [pageInput, setPageInput] = useState(String(initialState?.page ?? 1));
+  const [zoom, setZoom] = useState(initialState?.zoom ?? 1);
   const [width, setWidth] = useState(600);
   const [viewportHeight, setViewportHeight] = useState(600);
   const [wideScreen, setWideScreen] = useState(false);
@@ -30,10 +31,12 @@ export function PdfViewer({ url, title }: { url: string; title: string }) {
   const [collapsed, setCollapsed] = useState(false);
   const [retry, setRetry] = useState(0);
   const [pageStates, setPageStates] = useState<Record<number, PdfPageState>>({});
-  const currentPage = useRef(1);
+  const currentPage = useRef(initialState?.page ?? 1);
   const inputFocused = useRef(false);
   const focusColumn = useRef(0);
-  const anchor = useRef<{ page: number; fraction: number } | null>(null);
+  const anchor = useRef<{ page: number; fraction: number } | null>(initialState ? { page: initialState.page, fraction: initialState.fraction } : null);
+  const restored = useRef(false);
+  const reading = useRef<PdfReadingState>(initialState ?? { mode: settings.mode, height: settings.height, page: 1, zoom: 1, fraction: 0, scrollLeft: 0 });
   const frame = useRef(0);
   const columns = settings.mode === "spread" && wideScreen && width >= 560 ? 2 : 1;
   const availableWidth = Math.max(120, (width - 24 - (columns - 1) * 16) / columns);
@@ -72,8 +75,11 @@ export function PdfViewer({ url, title }: { url: string; title: string }) {
         const viewport = first.getViewport({ scale: 1 });
         first.cleanup();
         if (!cancelled) {
-          setRatio(viewport.height / viewport.width); setDocument(loaded); setPage(1); setPageInput("1");
-          currentPage.current = 1; setPageStates({}); setLoading(false);
+          const target = Math.min(currentPage.current, loaded.numPages);
+          setRatio(viewport.height / viewport.width); setDocument(loaded); setPage(target); setPageInput(String(target));
+          currentPage.current = target;
+          anchor.current = { page: target, fraction: reading.current.fraction };
+          restored.current = false; setPageStates({}); setLoading(false);
         }
       } catch { if (!cancelled) { setLoading(false); setError("PDF 加载失败，可能是文件不存在、网络问题或跨域限制。可重试，或打开/下载原文件。"); } }
     }
@@ -89,20 +95,33 @@ export function PdfViewer({ url, title }: { url: string; title: string }) {
     if (node) {
       root.scrollTop += node.getBoundingClientRect().top - root.getBoundingClientRect().top - 12 + position.fraction * node.offsetHeight;
       focusColumn.current = (position.page - 1) % columns;
+      if (!restored.current) root.scrollLeft = reading.current.scrollLeft;
+      restored.current = true;
       anchor.current = null;
     }
-  }, [settings, zoom, width, viewportHeight, collapsed, columns]);
+  }, [settings, zoom, width, viewportHeight, collapsed, columns, document]);
 
   useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
+  function publish(next: Partial<PdfReadingState>) {
+    reading.current = { ...reading.current, ...next };
+    onStateChange(reading.current);
+  }
   function saveSettings(next: typeof settings) {
     preservePosition(); setSettings(next);
-    try { localStorage.setItem("cet:pdf-preferences", JSON.stringify(next)); } catch { /* 当前页面仍可使用阅读设置。 */ }
+    publish({ mode: next.mode, height: next.height, fraction: anchor.current?.fraction ?? reading.current.fraction });
+    try { localStorage.setItem("cet:pdf-preferences", JSON.stringify({ version: 1, mode: next.mode, height: next.height })); }
+    catch { setSettings({ ...next, error: "通用阅读偏好保存失败；本卷阅读位置随练习记录自动保存。" }); }
+  }
+  function changeZoom(next: number) {
+    preservePosition(); setZoom(next);
+    publish({ zoom: next, fraction: anchor.current?.fraction ?? reading.current.fraction });
   }
   function jump(next: number) {
     if (!document || !Number.isInteger(next) || next < 1 || next > document.numPages) { setPageInput(String(page)); return; }
     currentPage.current = next; focusColumn.current = (next - 1) % columns;
     setPage(next); setPageInput(String(next));
+    publish({ page: next, fraction: 0, scrollLeft: 0 });
     if (settings.mode !== "single") {
       const root = container.current;
       const node = root?.querySelector<HTMLElement>(`[data-page="${next}"]`);
@@ -110,11 +129,10 @@ export function PdfViewer({ url, title }: { url: string; title: string }) {
     } else if (container.current) container.current.scrollTop = 0;
   }
   function trackPage() {
-    if (settings.mode === "single") return;
     cancelAnimationFrame(frame.current);
     frame.current = requestAnimationFrame(() => {
       const root = container.current;
-      if (!root) return;
+      if (!root || !restored.current) return;
       const bounds = root.getBoundingClientRect();
       const top = bounds.top + 14;
       const visible = Array.from(root.querySelectorAll<HTMLElement>("[data-page]")).map((node) => {
@@ -128,6 +146,8 @@ export function PdfViewer({ url, title }: { url: string; title: string }) {
       const next = Number((row[focusColumn.current] || row[0]).node.dataset.page);
       currentPage.current = next; setPage(next);
       if (!inputFocused.current) setPageInput(String(next));
+      const node = root.querySelector<HTMLElement>(`[data-page="${next}"]`);
+      if (node?.offsetHeight) publish({ page: next, fraction: (bounds.top + 12 - node.getBoundingClientRect().top) / node.offsetHeight, scrollLeft: root.scrollLeft });
     });
   }
   const onPageState = useCallback((number: number, state: PdfPageState) => {
@@ -144,20 +164,21 @@ export function PdfViewer({ url, title }: { url: string; title: string }) {
         </select>
         <div className="flex items-center gap-1">
           <button className="tool-button" aria-label="上一页" disabled={!document || page <= 1 || collapsed} onClick={() => jump(page - 1)}><ChevronLeft size={17} /></button>
-          <label className="flex items-center gap-1 text-xs"><input className="page-number" aria-label="PDF 页码" type="number" min="1" max={document?.numPages || 1} value={pageInput} onFocus={() => { inputFocused.current = true; }} onChange={(e) => setPageInput(e.target.value)} onBlur={() => { inputFocused.current = false; jump(Number(pageInput)); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); jump(Number(pageInput)); e.currentTarget.blur(); } }} /><span>/ {document?.numPages ?? "—"}</span></label>
+          <label className="flex items-center gap-1 text-xs"><input className="page-number" aria-label="PDF 页码" type="number" min="1" max={document?.numPages || 1} disabled={!document || loading || collapsed} value={pageInput} onFocus={() => { inputFocused.current = true; }} onChange={(e) => setPageInput(e.target.value)} onBlur={() => { inputFocused.current = false; jump(Number(pageInput)); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); jump(Number(pageInput)); e.currentTarget.blur(); } }} /><span>/ {document?.numPages ?? "—"}</span></label>
           <button className="tool-button" aria-label="下一页" disabled={!document || page >= document.numPages || collapsed} onClick={() => jump(page + 1)}><ChevronRight size={17} /></button>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-1">
-        <button className="tool-button" aria-label="缩小" disabled={zoom <= 0.75 || collapsed} onClick={() => { preservePosition(); setZoom(Math.max(0.75, zoom - 0.25)); }}><Minus size={16} /></button>
-        <button className="tool-button text-xs" onClick={() => { preservePosition(); setZoom(1); }} aria-label="适合宽度">{Math.round(zoom * 100)}%</button>
-        <button className="tool-button" aria-label="放大" disabled={zoom >= 2.5 || collapsed} onClick={() => { preservePosition(); setZoom(Math.min(2.5, zoom + 0.25)); }}><Plus size={16} /></button>
+        <button className="tool-button" aria-label="缩小" disabled={zoom <= 0.75 || collapsed} onClick={() => changeZoom(Math.max(0.75, zoom - 0.25))}><Minus size={16} /></button>
+        <button className="tool-button text-xs" onClick={() => changeZoom(1)} aria-label="适合宽度">{Math.round(zoom * 100)}%</button>
+        <button className="tool-button" aria-label="放大" disabled={zoom >= 2.5 || collapsed} onClick={() => changeZoom(Math.min(2.5, zoom + 0.25))}><Plus size={16} /></button>
         <select className="reading-mode" aria-label="预览高度" value={settings.height} onChange={(e) => saveSettings({ ...settings, height: Number(e.target.value) })}><option value={400}>紧凑</option><option value={560}>标准高度</option><option value={720}>加高</option></select>
         <button className="tool-button text-xs" aria-expanded={!collapsed} onClick={() => { preservePosition(); setCollapsed(!collapsed); }}>{collapsed ? "展开预览" : "折叠预览"}</button>
         <a className="tool-button" aria-label="新窗口打开 PDF" href={url} target="_blank" rel="noopener noreferrer"><ExternalLink size={15} /></a>
         <a className="tool-button text-xs" href={url} download>下载 PDF</a>
       </div>
     </div>
+    {settings.error && <p className="px-4 py-2 text-xs text-danger" role="alert">{settings.error}</p>}
     {error && <div className="p-5 space-y-3 text-sm" role="alert"><p>{error}</p><div className="flex flex-wrap gap-2"><button className="tool-button" onClick={() => setRetry(retry + 1)}>重试加载</button><a className="tool-button" href={url} target="_blank" rel="noopener noreferrer">打开原文件</a><a className="tool-button" href={url} download>下载 PDF</a></div></div>}
     <div ref={container} className="pdf-scroll" data-height={settings.height} hidden={collapsed} onScroll={trackPage} tabIndex={0} role="region" aria-label="PDF 独立滚动阅读区" aria-busy={loading || state?.loading}>
       {loading && !error && <p role="status" className="pdf-loading">正在加载 PDF 页面…</p>}

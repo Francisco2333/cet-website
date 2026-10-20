@@ -5,6 +5,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { createStaticServer } from "../scripts/serve-static.mjs";
 import { runIterationTwoChecks, makeReviewReply } from "./iteration-two-browser.mjs";
 import { runTranslationChecks } from "./translation-browser.mjs";
+import { runLocalFirstChecks } from "./local-first-browser.mjs";
 
 const require = createRequire(import.meta.url);
 mkdirSync("test-results", { recursive: true });
@@ -62,7 +63,7 @@ const api = createServer((req, res) => {
 });
 await new Promise((resolve) => api.listen(0, "127.0.0.1", resolve));
 const apiOrigin = `http://127.0.0.1:${api.address().port}`;
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
 const context = await browser.newContext({ viewport: { width: 1440, height: 1050 }, acceptDownloads: true });
 const page = await context.newPage();
 page.setDefaultTimeout(12000);
@@ -216,10 +217,16 @@ try {
   await page.getByLabel("计时模式").selectOption("countdown");
   await page.getByLabel("倒计时分钟数").fill("1");
   await page.getByRole("button", { name: "开始", exact: true }).click();
-  await page.evaluate(() => {
-    const key = "cet:attempt:cet4:original-complete";
-    const data = JSON.parse(localStorage.getItem(key)); data.timer.startedAt = Date.now() - 61000;
-    localStorage.setItem(key, JSON.stringify(data));
+  await page.evaluate(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const db = await new Promise((resolve, reject) => { const r = indexedDB.open("cet-local-data", 1); r.onsuccess = () => resolve(r.result); r.onerror = reject; });
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction("practices", "readwrite"); const store = tx.objectStore("practices");
+      const request = store.get("cet4:original-complete");
+      request.onsuccess = () => { const data = request.result; data.attempt.timer.startedAt = Date.now() - 61000; store.put(data); };
+      tx.oncomplete = resolve; tx.onerror = reject;
+    });
+    db.close();
   });
   await page.reload(); await visible(page.getByText("时间到，可以继续作答，不会自动交卷。"));
   await visible(page.getByRole("button", { name: "提交并检查答案" }));
@@ -252,6 +259,7 @@ try {
   record("PDF 404 降级可操作、未知试卷返回 404、旧广告文件与域名移除；无页面运行时异常");
   await runIterationTwoChecks({ page, origin, apiOrigin, record, requests: () => requestCount });
   await runTranslationChecks({ page, origin, apiOrigin, record, requests: () => requestCount, inputs: () => translationInputs });
+  await runLocalFirstChecks({ chromium, origin, apiOrigin, record, requests: () => requestCount });
   assert.deepEqual(errors, []);
   writeFileSync("test-results/browser-results.json", JSON.stringify({ basePath, checks: logs, errors, note: "AI 使用本机 HTTP 兼容测试服务，未调用外部真实模型。" }, null, 2));
 } catch (error) {

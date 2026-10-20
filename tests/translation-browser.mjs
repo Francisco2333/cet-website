@@ -38,7 +38,18 @@ export async function runTranslationChecks({ page, origin, apiOrigin, record, re
   await page.setViewportSize({ width: 1440, height: 1050 });
   await page.goto(`${origin}/library/cet4/2025_12_1/`);
   await page.getByLabel("PDF 阅读模式").selectOption("single");
-  const draftBefore = await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).filter((key) => key.startsWith("cet:attempt:")).map((key) => [key, localStorage.getItem(key)])));
+  await page.waitForFunction(() => document.querySelector('.pdf-page-slot'));
+  await page.getByLabel("PDF 页码", { exact: true }).fill("1");
+  await page.getByLabel("PDF 页码", { exact: true }).press("Enter");
+  async function drafts() {
+    return page.evaluate(async () => {
+      const db = await new Promise((resolve, reject) => { const r = indexedDB.open("cet-local-data", 1); r.onsuccess = () => resolve(r.result); r.onerror = reject; });
+      const records = await new Promise((resolve, reject) => { const r = db.transaction("practices").objectStore("practices").getAll(); r.onsuccess = () => resolve(r.result); r.onerror = reject; });
+      db.close();
+      return records.map(({ key, attempt }) => ({ key, answers: attempt.answers, sourceTexts: attempt.sourceTexts, reviews: attempt.reviews }));
+    });
+  }
+  const draftBefore = await drafts();
   const initialRequests = requests();
   await select(); await clickTranslate();
   await visible(popup.getByRole("alert").filter({ hasText: "请先在 AI 设置中配置 API 信息。" }));
@@ -96,7 +107,7 @@ export async function runTranslationChecks({ page, origin, apiOrigin, record, re
   await page.clock.resume(); await close();
   assert.equal(await page.getByLabel("试卷听力", { exact: true }).evaluate((audio) => audio === window.__translationAudio && !audio.paused), true);
   await page.getByLabel("试卷听力", { exact: true }).evaluate((audio) => audio.pause());
-  const draftAfter = await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).filter((key) => key.startsWith("cet:attempt:")).map((key) => [key, localStorage.getItem(key)])));
+  const draftAfter = await drafts();
   assert.deepEqual(draftAfter, draftBefore);
   assert.equal(await page.evaluate(() => JSON.stringify(localStorage).includes("local-fixture-key")), false);
   record("真实翻译请求的 25 秒超时错误（浏览器时钟推进）；全过程听力不中断、原作答存档和内存密钥边界不变");

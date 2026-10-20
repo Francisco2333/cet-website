@@ -9,7 +9,7 @@ import { BASE_PATH } from "@/lib/paths";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AiSettingsButton } from "@/components/ai-provider";
 
-const items = [{ href: "/library/cet4", label: "四级题库" }, { href: "/library/cet6", label: "六级题库" }, { href: "/practice/sample", label: "原创练习" }, { href: "/faq", label: "使用帮助" }];
+const items = [{ href: "/library/cet4", label: "四级题库" }, { href: "/library/cet6", label: "六级题库" }, { href: "/practice/sample", label: "原创练习" }, { href: "/records", label: "学习记录" }, { href: "/faq", label: "使用帮助" }];
 export function Header() {
   const pathname = usePathname().replace(BASE_PATH, "");
   const [open, setOpen] = useState(false);
